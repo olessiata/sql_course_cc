@@ -1,0 +1,7 @@
+-----Which tracks appeared in the most playlists? how many playlist did they appear in?
+
+SELECT tracks.name, playlist_track.trackid, count(playlist_track.TrackId)
+from playlist_track JOIN tracks
+on playlist_track.TrackId=tracks.TrackId
+group by playlist_track.TrackId
+order by 3 DESC, 1 ASC
