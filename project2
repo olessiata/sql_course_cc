@@ -5,3 +5,43 @@ from playlist_track JOIN tracks
 on playlist_track.TrackId=tracks.TrackId
 group by playlist_track.TrackId
 order by 3 DESC, 1 ASC
+
+----- Which track generated the most revenue? which album? which genre?
+*revenue by track
+
+select tracks.TrackId, tracks.name, tracks.UnitPrice, count(invoice_items.Quantity), tracks.UnitPrice*count(invoice_items.quantity) AS "Total"
+from invoice_items join tracks on invoice_items.TrackId=tracks.TrackId
+group by tracks.TrackId
+order by 5 desc, 4 desc, 2 ASC
+
+*revenue by album
+
+select tracks.albumid, albums.title, count(invoice_items.Quantity), tracks.UnitPrice*count(invoice_items.quantity) AS "Total"
+from invoice_items join tracks on invoice_items.TrackId=tracks.TrackId
+join albums on tracks.albumid=albums.AlbumId
+group by tracks.AlbumId
+order by "Total" DESC
+
+*revenue by genre
+select tracks.GenreId, genres.name, count(invoice_items.Quantity), tracks.UnitPrice*count(invoice_items.quantity) AS "Total"
+from invoice_items join tracks on invoice_items.TrackId=tracks.TrackId
+join genres on tracks.genreid=genres.genreid
+group by tracks.GenreId
+order by "Total" DESC
+
+
+----- Which countries have the highest sales revenue? What percent of total revenue does each country make up?
+
+select invoices.BillingCountry, count(invoice_items.Quantity), tracks.UnitPrice*count(invoice_items.quantity) AS "Total"
+from invoice_items join tracks on invoice_items.TrackId=tracks.TrackId
+join invoices on invoices.invoiceid=invoice_items.invoiceid
+group by 1
+order by "Total" DESC
+
+
+*%
+select invoices.BillingCountry, round(sum(invoice_items.UnitPrice*invoice_items.quantity),2) as "Revenue",  
+round(sum(invoice_items.UnitPrice) / (select sum(invoice_items.UnitPrice) from invoice_items)*100,2) as "%"
+from invoice_items join invoices on invoices.invoiceid=invoice_items.invoiceid
+group by 1
+order by 3 DESC
